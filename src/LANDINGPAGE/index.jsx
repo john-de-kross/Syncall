@@ -19,7 +19,7 @@ const LandingPage = () => {
                     <p className="text-gray-200 text-base">Start your call instantly</p>
                     <p className="text-gray-200 text-base">No login, no delay</p>
 
-                    <form action="" className="md:mt-7 mt-3 px-3  space-x-2 space-y-2 w-full md:px-0 md:space-x-0 md:space-y-4 flex flex-col items-start ">
+                    <form action="" className="md:mt-7 mt-3 px-7  space-x-2 space-y-2 w-full md:px-0 md:space-x-0 md:space-y-4 flex flex-col items-start ">
                         <label htmlFor="" className="text-gray-300 text-base md:text-lg mb-1">
                             Username
                         </label>
@@ -36,7 +36,7 @@ const LandingPage = () => {
                             type="text"
                             placeholder="abc12345"
                         />
-                        < Copy className="absolute mt-28 md:mt-30 w-4 h-4 right-[20%] md:cursor-pointer text-gray-200 md:right-[30%]" />
+                        < Copy className="absolute mt-28 md:mt-30 w-4 h-4 right-[12%] md:cursor-pointer text-gray-200 md:right-[30%]" />
                         <p className="text-xs w-full flex justify-center text-gray-400 px-4">Tip: Unique ID is automatically copied</p>
                         <div className="btn w-full flex flex-col md:flex-row place-items-center gap-4 md:flex md:justify-between md:gap-4">
                             <button className="flex justify-center gap-3 items-center font-normal md:font-medium text-gray-100 shadow rounded-xl shadow-slate-900 bg-blue-950 w-[60%] md:w-[70%] h-9 md:rounded-2xl">
