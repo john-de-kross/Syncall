@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Copy, Link, Phone } from "lucide-react";
 import { Tooltip } from "react-tooltip";
+import { AllContext } from "../CONTEXT";
 
 const LandingPage = () => {
   const [clickCopy, setClickCopy] = useState(false);
+  const { roomId, setRoomId } = AllContext();
 
   const handleCopyTouch = () => {
     setClickCopy(true);
+    navigator.clipboard.writeText(roomId);
   };
 
   useEffect(() => {
@@ -41,8 +44,12 @@ const LandingPage = () => {
           <h1 className="font-bold text-white text-2xl md:text-6xl lg:text-3xl mb-4">
             Create & Invite
           </h1>
-          <p className="text-gray-200 text-lg md:text-4xl lg:text-xl">Start your call instantly</p>
-          <p className="text-gray-200 text-lg md:text-4xl lg:text-xl">No login, no delay</p>
+          <p className="text-gray-200 text-lg md:text-4xl lg:text-xl">
+            Start your call instantly
+          </p>
+          <p className="text-gray-200 text-lg md:text-4xl lg:text-xl">
+            No login, no delay
+          </p>
 
           <form
             action=""
@@ -68,7 +75,11 @@ const LandingPage = () => {
             <input
               className="outline-none relative text-base font-medium border text-white p-2 w-full h-12 md:text-2xl md:h-20 lg:h-10 lg:text-lg bg-gradient-to-r from-gray-700 to-gray-900 border-gray-500 rounded-lg"
               type="text"
+              value={roomId}
+              name="roomId"
+              onChange={(e) => setRoomId(e.target.value)}
               placeholder="abc12345"
+              autoComplete="off"
             />
             <Copy
               onClick={handleCopyTouch}
@@ -78,7 +89,11 @@ const LandingPage = () => {
             <Tooltip
               anchorSelect="#copy-icon"
               className="tooltip "
-              content={<span className="text-base font-medium md:text-3xl lg:text-base">Copied!</span>}
+              content={
+                <span className="text-base font-medium md:text-3xl lg:text-base">
+                  Copied!
+                </span>
+              }
               isOpen={clickCopy}
             />
 
