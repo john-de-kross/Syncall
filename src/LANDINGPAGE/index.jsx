@@ -112,7 +112,13 @@ const LandingPage = () => {
             </div>
           </form>
         </div>
+        <footer className="w-full text-center text-gray-300 text-lg md:text-xl mt-3 lg:hidden">
+          By using <span className="text-xl font-medium md:text-2xl">Syncall</span>, you agree to our
+          <a className="underline text-blue-500 hover:text-orange-300" href=""> Privacy Policy</a>
+          <a className="underline text-blue-500 hover:text-orange-300" href=""> Terms of Use</a>
+        </footer>
       </div>
+      
     </div>
   );
 };
