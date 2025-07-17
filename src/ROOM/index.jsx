@@ -10,15 +10,15 @@ const Room = () => {
                 <div className="flex items-center gap-5 md:gap-7">
                     <ChevronLeft size={30} className="text-gray-200 md:h-14 md:w-14" />
                     <SwitchCamera size={30} className="text-gray-300 md:h-14 md:w-14" />
-                    <Volume2 size={30} className="text-gray-300 md:h-14 md:w-14" />
+                    <Volume2 size={25} className="text-gray-300 md:h-14 md:w-14" />
                 </div>
 
                 <div className="flex items-center justify-center gap-1 pr-9">
                     <ShieldCheck size={20} fill="green" className="md:h-14 md:w-14"/>
-                    <span className="text-gray-200 font-medium text-base md:text-4xl">Syncall</span>
+                    <span className="text-gray-200 font-medium text-lg md:text-4xl">Syncall</span>
                     <ChevronDown size={20} className="text-gray-300 md:h-14 md:w-14" />
                 </div>
-                <div className="bg-red-500 h-6 w-6 rounded md:h-8 md:w-8">
+                <div className="bg-red-500 h-5 w-5 rounded md:h-8 md:w-8">
 
 
                 </div>
