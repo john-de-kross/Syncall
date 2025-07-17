@@ -15,10 +15,12 @@ import {
   Video,
   Volume2,
 } from "lucide-react";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import ToastAlert from "../TOAST";
 
 const Room = () => {
-    const videoRef = useRef(null);
+  const videoRef = useRef(null);
+  const [rearCam, setRearCam] = useState(false);
 
     useEffect(() => {
         const contraints = { video: true, audio: true };
@@ -26,20 +28,37 @@ const Room = () => {
         navigator.mediaDevices.getUserMedia(contraints)
             .then((stream) => {
                 if (videoRef.current) {
-                    videoRef.current.srcObject = stream;
+                  videoRef.current.srcObject = stream; 
             }
             
             }).catch((err) => {
-            console.log("Media err", err)
+              ToastAlert.error('Error accessing Camera and Microphone: ' + err.message);
         })
         
     }, [])
+  
+  const handleCamChange = () => setRearCam(prev => !prev);
+
+  useEffect(() => {
+    const constraints = { video: rearCam ? { facingMode: { exact: 'environment' } } : { facingMode: "user" }, audio: true };
+    navigator.mediaDevices.getUserMedia(constraints)
+      .then((stream) => {
+        if (videoRef.current) {
+        videoRef.current.srcObject = stream
+      }
+      }).catch((err) => {
+        ToastAlert.error('Error occurred while trying to switch the camera: ' + err.message);
+    })
+
+  }, [rearCam]);
+  
+  
   return (
     <div className="w-full flex flex-col min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
       <nav className="flex items-center justify-between px-4 md:px-4 h-20 md:h-40 bg-gradient-to-r from-slate-700 lg:hidden via-black to-gray-900">
         <div className="flex items-center gap-5 md:gap-7">
           <ChevronLeft size={30} className="text-gray-200 md:h-14 md:w-14" />
-          <SwitchCamera size={30} className="text-gray-300 md:h-14 md:w-14" />
+          <SwitchCamera onClick={handleCamChange} size={30} className="text-gray-300 md:h-14 md:w-14" />
           <Volume2 size={25} className="text-gray-300 md:h-14 md:w-14" />
         </div>
 
