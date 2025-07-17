@@ -50,7 +50,7 @@ const Room = () => {
       .getUserMedia(contraints)
       .then((stream) => {
         if (videoRef.current) {
-          console.log(stream);
+          mute ? stream.getAudioTracks()[0].enabled = false : stream.getAudioTracks()[0].enabled = true
         }
       })
       .catch((err) => console.log(err));
@@ -113,7 +113,7 @@ const Room = () => {
       <footer className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 flex items-center justify-center bg-[#1A1C1E]/80 backdrop-blur-md text-white px-8 py-3 rounded-2xl space-x-6 shadow-lg">
         {/* Mic Button */}
         <button className="w-12 h-12 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center transition duration-300">
-          <Mic size={24} />
+          {mute ? <MicOff onClick={handleMute} size={24}/> : <Mic onClick={handleMute} size={24} />}
         </button>
 
         {/* Video Button */}
