@@ -1,20 +1,14 @@
 import {
-  Calculator,
   ChevronDown,
   ChevronLeft,
-  CircleEllipsis,
-  Disc2,
-  Heart,
-  MessageCircleMore,
   Mic,
   MicOff,
-  Notebook,
-  ScreenShare,
   ShieldCheck,
   SwitchCamera,
-  Users,
   Video,
   Volume2,
+  Phone,
+  EllipsisVertical
 } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import ToastAlert from "../TOAST";
@@ -121,9 +115,13 @@ const Room = () => {
           <Video size={24} />
         </button>
 
+        <button>
+          <EllipsisVertical />
+        </button>
+
         {/* End Call Button */}
         <button className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full font-semibold transition duration-300">
-          End Call
+          <Phone className="transform rotate-135"/>
         </button>
       </footer>
     </div>
