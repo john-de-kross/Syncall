@@ -2,10 +2,17 @@ import React, { useEffect, useState } from "react";
 import { Copy, Link, Phone } from "lucide-react";
 import { Tooltip } from "react-tooltip";
 import { AllContext } from "../CONTEXT";
+import axios from "axios";
+import {useNavigate} from "react-router-dom";
+import ToastAlert from "../TOAST";
+
+
 
 const LandingPage = () => {
   const [clickCopy, setClickCopy] = useState(false);
-  const { roomId, setRoomId } = AllContext();
+  const { roomId, setRoomId, username, setUsername, socket } = AllContext();
+  const navigate = useNavigate();
+  
 
   const handleCopyTouch = () => {
     setClickCopy(true);
@@ -19,6 +26,97 @@ const LandingPage = () => {
       }
     }, 1500);
   }, [clickCopy]);
+
+  useEffect(() => {
+    if (!socket) return;
+    const handleConnection = () => {
+      console.log('Socket connected');
+    };
+    const handleRoomId = (data) => {
+      setRoomId(data.roomId);
+      ToastAlert.info('Room ID is automatically copied to clipboard');
+      navigator.clipboard.writeText(data.roomId);
+      
+    }
+    socket.on('connect', handleConnection);
+    socket.on('roomId', handleRoomId);
+
+    return () => {
+      socket.off('connect', handleConnection);
+      socket.off('roomId', handleRoomId);
+      console.log('socket disconnected');
+    }
+  }, [socket]);
+
+
+  const handleRoomCreation = async (e) => {
+    e.preventDefault();
+    if (!username) {
+      return ToastAlert.error('Please enter a username');
+    }
+    try {
+
+      const response = await axios.post('https://syncall-server.onrender.com/api/v1/user/create-room', { username });
+      navigate(`/room/${response.data.data.room.roomId}`);
+      
+      
+    } catch (err) {
+      console.log(err)
+      if (err.response) {
+        if (err.response.data.message.startsWith('E11000 duplicate key error')) {
+          ToastAlert.error('Username already exists. Please choose a different username.');
+        } else if (err.response.data.message.startsWith('RoomCreator validation failed: username: Path `username` (`To`) is shorter than the minimum allowed length')) {
+          ToastAlert.error('Username must be at least 3 characters long.');
+        } else {
+          ToastAlert.error('An error occurred while creating the room');
+        }
+
+      } else {
+        ToastAlert.error('Network error. Please try again later.');
+      }
+    }
+    
+    
+  }
+
+  const handleJoinRoom = async(e) => {
+    e.preventDefault();
+    if (!roomId || !username) {
+      return ToastAlert.error('Please enter both Room ID and Username');
+    }
+    try {
+      const response = await axios.post('https://syncall-server.onrender.com/api/v1/user/join-room', { roomId, username });
+      navigate(`/room/${roomId}`);
+      console.log(response.data);
+      ToastAlert.success(`Joined room: ${roomId}`);
+
+    } catch (err) {
+      console.error(err);
+      if (err.response) {
+        if (err.response.status === 404) {
+          ToastAlert.error('Room not found. Please check the Room ID.');
+        } else if (err.response.status === 400) {
+          ToastAlert.error('Invalid Room ID. Please enter a valid Room ID.');
+
+        } else if (err.response.data.message.startsWith('E11000 duplicate key error')) {
+          ToastAlert.error('Username already exists. Please choose a different username.');
+        } else if (err.response.data.message.startsWith('RoomCreator validation failed: username: Path `username` (`To`) is shorter than the minimum allowed length')) {
+          ToastAlert.error('Username must be at least 3 characters long.');
+         }
+        else {
+          ToastAlert.error('An error occurred while joining the room');
+        }
+
+      } else {
+        ToastAlert.error('Network error. Please try again later.');
+      }
+    }
+  }
+
+
+
+  
+
   return (
     <div className="w-full min-h-screen lg:mx-auto lg:w-[90%] lg:[70vh] bg-gradient-to-b from-blue-400 to-blue-900  flex items-center justify-center lg:bg-slate-700 lg:bg-none lg:from-none lg:to-none">
       <div className="w-full h-full lg:w-[60%] lg:h-[76vh] lg:bg-gradient-to-br lg:from-slate-600 lg:via-slate-700 lg:to-indigo-500 lg:grid lg:py-7 lg:grid-cols-2 lg:rounded-lg lg:shadow-lg">
@@ -64,13 +162,17 @@ const LandingPage = () => {
             <input
               className="outline-none border text-base font-medium text-white p-2 w-full h-12 md:h-20 md:text-2xl lg:text-lg lg:h-10 bg-gradient-to-r from-gray-700 to-gray-900 border-gray-500 rounded-lg"
               type="text"
+              name="username"
+              value={username}
+              onChange={(e)=> setUsername(e.target.value)}
               placeholder="'eg: Michael' "
+              autoComplete="off"
             />
             <label
               htmlFor=""
               className="text-gray-300 text-base md:text-2xl md:font-medium lg:font-normal lg:text-lg mb-1 "
             >
-              Unique ID
+              Room ID
             </label>
             <input
               className="outline-none relative text-base font-medium border text-white p-2 w-full h-12 md:text-2xl md:h-20 lg:h-10 lg:text-lg bg-gradient-to-r from-gray-700 to-gray-900 border-gray-500 rounded-lg"
@@ -101,11 +203,11 @@ const LandingPage = () => {
               Tip: Unique ID is automatically copied
             </p>
             <div className="btn w-full flex flex-col lg:flex-row place-items-center gap-4 md:flex lg:justify-between md:gap-4">
-              <button className="flex justify-center gap-3 items-center font-normal lg:font-medium lg:h-9 text-gray-100 shadow rounded-xl lg:text-base shadow-slate-900 md:h-16 md:text-2xl bg-blue-950 w-[60%] lg:w-[70%] h-9 lg:rounded-2xl">
+              <button onClick={handleRoomCreation} className="flex justify-center gap-3 items-center font-normal lg:font-medium lg:h-9 text-gray-100 shadow rounded-xl lg:text-base shadow-slate-900 md:h-16 md:text-2xl bg-blue-950 w-[60%] lg:w-[70%] h-9 lg:rounded-2xl">
                 <Phone className="text-green-600 h-5 w-5 md:h-8 md:w-8 lg:h-6 lg:w-6 fill-green-600" />
                 Create Room
               </button>
-              <button className="flex justify-center items-center gap-3 font-normal lg:font-medium text-gray-100 rounded-xl shadow md:h-16 md:text-2xl lg:text-base shadow-slate-900 bg-blue-950 lg:h-9 w-[60%] lg:w-[70%] h-9 lg:rounded-2xl">
+              <button onClick={handleJoinRoom} className="flex justify-center items-center gap-3 font-normal lg:font-medium text-gray-100 rounded-xl shadow md:h-16 md:text-2xl lg:text-base shadow-slate-900 bg-blue-950 lg:h-9 w-[60%] lg:w-[70%] h-9 lg:rounded-2xl">
                 <Link className="text-green-600 h-5 w-5 md:h-8 md:w-8 lg:h-6 lg:w-6" />
                 Join Room
               </button>
