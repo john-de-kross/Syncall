@@ -26,11 +26,11 @@ const Room = () => {
   const [mute, setMute] = useState(false);
   const [roomPayload, setRoomPayload] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const { username, setUsername, socket } = AllContext();
+  const { socket } = AllContext();
   const { roomId } = useParams();
   const roomUrl = `${window.location.origin}/room/${roomId}`;
   const navigate = useNavigate();
-  const [isUserRegistered, setIsUserRegistered] = useState(true);
+  // const [isUserRegistered, setIsUserRegistered] = useState(true);
 
   useEffect(() => {
     const contraints = { video: true, audio: true };
@@ -41,7 +41,6 @@ const Room = () => {
         if (videoRef.current) {
           localStreamRef.current = stream;
           videoRef.current.srcObject = stream;
-          socket.emit("join-room", { roomId, username });
         }
       })
       .catch((err) => {
@@ -60,6 +59,7 @@ const Room = () => {
       .getUserMedia(contraints)
       .then((stream) => {
         if (videoRef.current) {
+          localStreamRef.current = stream
           mute
             ? (stream.getAudioTracks()[0].enabled = false)
             : (stream.getAudioTracks()[0].enabled = true);
@@ -115,6 +115,7 @@ const Room = () => {
       .getUserMedia(constraints)
       .then((stream) => {
         if (videoRef.current) {
+          localStreamRef.current = stream
           videoRef.current.srcObject = stream;
         }
       })
@@ -131,12 +132,12 @@ const Room = () => {
       .then((res) => {
         console.log(res);
         setRoomPayload(res.data.data);
-        const isOwner = res.data.data.host === username;
-        const isGuest = res.data.data.guest === username;
-        if (!isOwner && !isGuest) {
-          ToastAlert.error("Enter your name to join the room");
-          setIsUserRegistered(false);
-        }
+        // const isOwner = res.data.data.host === username;
+        // const isGuest = res.data.data.guest === username;
+        // if (!isOwner && !isGuest) {
+        //   // ToastAlert.error("Enter your name to join the room");
+        //   // setIsUserRegistered(false);
+        // }
       })
       .catch((err) => {
         if (err.response) {
@@ -272,47 +273,47 @@ const Room = () => {
     });
   }, [socket, roomId]);
 
-  const handleJoinRoom = async (e) => {
-    e.preventDefault();
-    if (!username) {
-      return ToastAlert.error("Please enter your name to join room");
-    }
-    try {
-      const response = await axios.post(
-        "https://syncall-server-1.onrender.com/api/v1/user/join-room",
-        { roomId, username }
-      );
-      navigate(`/room/${roomId}`);
-      console.log(response.data);
-      ToastAlert.success(`Successfully joined the room: ${roomId}`);
-      setIsUserRegistered(true);
-    } catch (err) {
-      console.error(err);
-      if (err.response) {
-        if (err.response.status === 404) {
-          ToastAlert.error("Room not found. Please check the Room ID.");
-        } else if (err.response.status === 400) {
-          ToastAlert.error("Invalid Room ID. Please enter a valid Room ID.");
-        } else if (
-          err.response.data.message.startsWith("E11000 duplicate key error")
-        ) {
-          ToastAlert.error(
-            "Username already exists. Please choose a different username."
-          );
-        } else if (
-          err.response.data.message.startsWith(
-            "RoomCreator validation failed: username: Path `username` (`To`) is shorter than the minimum allowed length"
-          )
-        ) {
-          ToastAlert.error("Username must be at least 3 characters long.");
-        } else {
-          ToastAlert.error("An error occurred while joining the room");
-        }
-      } else {
-        ToastAlert.error("Network error. Please try again later.");
-      }
-    }
-  };
+  // const handleJoinRoom = async (e) => {
+  //   e.preventDefault();
+  //   if (!username) {
+  //     return ToastAlert.error("Please enter your name to join room");
+  //   }
+  //   try {
+  //     const response = await axios.post(
+  //       "https://syncall-server-1.onrender.com/api/v1/user/join-room",
+  //       { roomId, username }
+  //     );
+  //     navigate(`/room/${roomId}`);
+  //     console.log(response.data);
+  //     ToastAlert.success(`Successfully joined the room: ${roomId}`);
+  //     setIsUserRegistered(true);
+  //   } catch (err) {
+  //     console.error(err);
+  //     if (err.response) {
+  //       if (err.response.status === 404) {
+  //         ToastAlert.error("Room not found. Please check the Room ID.");
+  //       } else if (err.response.status === 400) {
+  //         ToastAlert.error("Invalid Room ID. Please enter a valid Room ID.");
+  //       } else if (
+  //         err.response.data.message.startsWith("E11000 duplicate key error")
+  //       ) {
+  //         ToastAlert.error(
+  //           "Username already exists. Please choose a different username."
+  //         );
+  //       } else if (
+  //         err.response.data.message.startsWith(
+  //           "RoomCreator validation failed: username: Path `username` (`To`) is shorter than the minimum allowed length"
+  //         )
+  //       ) {
+  //         ToastAlert.error("Username must be at least 3 characters long.");
+  //       } else {
+  //         ToastAlert.error("An error occurred while joining the room");
+  //       }
+  //     } else {
+  //       ToastAlert.error("Network error. Please try again later.");
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
     console.log(roomPayload);
@@ -345,7 +346,8 @@ const Room = () => {
           <video
             ref={videoRef}
             autoPlay
-            muted={mute}
+            playsInline
+            muted
             className="w-full h-full object-cover"
           />
         </div>
@@ -353,6 +355,7 @@ const Room = () => {
           <video
             ref={remoteRef}
             autoPlay
+            playsInline
             style={{ transform: "scaleX(-1)" }}
             className="w-full h-full object-cover"
           />
@@ -408,7 +411,7 @@ const Room = () => {
             </button>
           </div>
         )}
-        {!isUserRegistered && (
+        {/* {!isUserRegistered && (
           <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-30">
             <div className="bg-white p-6 rounded-lg shadow-lg text-center">
               <h2 className="text-xl font-semibold mb-4">Join Room</h2>
@@ -430,7 +433,7 @@ const Room = () => {
               </button>
             </div>
           </div>
-        )}
+        )} */}
       </main>
 
       <footer className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 flex items-center justify-center bg-[#1A1C1E]/80 backdrop-blur-md text-white px-8 py-3 rounded-2xl space-x-6 shadow-lg">
