@@ -127,7 +127,7 @@ const Room = () => {
 
   useEffect(() => {
     axios
-      .get(`https://syncall-server.onrender.com/api/v1/user/get-room/${roomId}`)
+      .get(`https://syncall-server-1.onrender.com/api/v1/user/get-room/${roomId}`)
       .then((res) => {
         console.log(res);
         setRoomPayload(res.data.data);
@@ -279,7 +279,7 @@ const Room = () => {
     }
     try {
       const response = await axios.post(
-        "https://syncall-server.onrender.com/api/v1/user/join-room",
+        "https://syncall-server-1.onrender.com/api/v1/user/join-room",
         { roomId, username }
       );
       navigate(`/room/${roomId}`);

@@ -56,7 +56,7 @@ const LandingPage = () => {
     }
     try {
 
-      const response = await axios.post('https://syncall-server.onrender.com/api/v1/user/create-room', { username });
+      const response = await axios.post('https://syncall-server-1.onrender.com/api/v1/user/create-room', { username });
       navigate(`/room/${response.data.data.room.roomId}`);
       
       
@@ -85,7 +85,7 @@ const LandingPage = () => {
       return ToastAlert.error('Please enter both Room ID and Username');
     }
     try {
-      const response = await axios.post('https://syncall-server.onrender.com/api/v1/user/join-room', { roomId, username });
+      const response = await axios.post('https://syncall-server-1.onrender.com/api/v1/user/join-room', { roomId, username });
       navigate(`/room/${roomId}`);
       console.log(response.data);
       ToastAlert.success(`Joined room: ${roomId}`);
