@@ -10,7 +10,7 @@ export const UserProvider = ({ children }) => {
     
     
     useEffect(() => {
-        socketRef.current = io('http://localhost:5000'); // Adjust the URL as needed
+        socketRef.current = io('https://syncall-server-1.onrender.com'); // Adjust the URL as needed
         return () => {
             socketRef.current.disconnect();
         };
