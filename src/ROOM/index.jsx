@@ -26,7 +26,7 @@ const Room = () => {
   const [mute, setMute] = useState(false);
   const [roomPayload, setRoomPayload] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const { socket } = AllContext();
+  const { socket, username } = AllContext();
   const { roomId } = useParams();
   const navigate = useNavigate();
 
@@ -148,17 +148,11 @@ const Room = () => {
 
   // Create peer connection
   const createPeerConnection = async () => {
-    const peerConnection = new RTCPeerConnection({
-      iceServers: [
-        { urls: "stun:stun.l.google.com:19302" },
-        // Use a valid TURN server for testing (replace with your own in production)
-        {
-          urls: "turn:numb.viagenie.ca",
-          username: "your-username", // Replace with valid credentials
-          credential: "your-password",
-        },
-      ],
-    });
+  const peerConnection = new RTCPeerConnection({
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" }, // STUN server only
+    ],
+  });
     peerConnectionRef.current = peerConnection;
 
     // Add local stream tracks
